@@ -10,6 +10,11 @@ import java.util.List;
 public final class NameHistoryServiceResult extends ServiceResult {
     private final @NotNull List<String> previousNames = new ArrayList<>();
 
+    /**
+     * Instantiates a wrapper for a name history json response.<br><br>
+     *
+     * @param response the json response, a {@link JsonElement}.
+     */
     NameHistoryServiceResult(final @NotNull JsonElement response) {
         super(response);
         for (JsonElement element : response.getAsJsonArray()) {
@@ -18,6 +23,11 @@ public final class NameHistoryServiceResult extends ServiceResult {
         Collections.reverse(previousNames);
     }
 
+    /**
+     * Obtains a list of previous names from the profile, in ascending order (most recent first).<br><br>
+     *
+     * @return A {@link List} of the profile's previous names.
+     */
     public @NotNull List<String> previousNames() {
         return Collections.unmodifiableList(previousNames);
     }

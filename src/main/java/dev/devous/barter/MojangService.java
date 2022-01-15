@@ -19,6 +19,14 @@ final class MojangService implements BarterService {
 
     }
 
+    /**
+     * Get a wrapped json response {@link ServiceResult} of a player's id & name, given their name.<br><br>
+     *
+     * @param name the name of a player.
+     * @return {@link ServiceResult} – a wrapper for the json response containing id & name.
+     * @throws EndpointConnectionException unable to contact endpoint.
+     * @throws IOException                 unable to read input stream.
+     */
     @Override
     public ServiceResult uuidQuery(final @NotNull String name) throws EndpointConnectionException, IOException {
         HttpsURLConnection connection =
@@ -32,6 +40,14 @@ final class MojangService implements BarterService {
         return serviceResult(jsonObject, ServiceResultType.DEFAULT);
     }
 
+    /**
+     * Get a wrapped json response {@link ServiceResult} of a player's profile, given their unique id.<br><br>
+     *
+     * @param uid the unique id of a player.
+     * @return {@link ProfileServiceResult} – a wrapper for the json response containing a profile.
+     * @throws EndpointConnectionException unable to contact endpoint.
+     * @throws IOException                 unable to read input stream.
+     */
     @Override
     public ProfileServiceResult profileQuery(final @NotNull UUID uid) throws EndpointConnectionException, IOException {
         HttpsURLConnection connection =
@@ -43,9 +59,17 @@ final class MojangService implements BarterService {
             jsonObject = JsonParser.parseReader(jsonReader).getAsJsonObject();
         }
         connection.disconnect();
-        return (ProfileServiceResult) serviceResult(jsonObject, ServiceResultType.PROFILE);
+        return serviceResult(jsonObject, ServiceResultType.PROFILE);
     }
 
+    /**
+     * Get a wrapped json response {@link ServiceResult} of a player's name history, given their unique id.<br><br>
+     *
+     * @param uid the unique id of a player.
+     * @return {@link NameHistoryServiceResult} – a wrapper for the json response containing name history.
+     * @throws EndpointConnectionException unable to contact endpoint.
+     * @throws IOException                 unable to read input stream.
+     */
     @Override
     public NameHistoryServiceResult nameHistoryQuery(final @NotNull UUID uid) throws EndpointConnectionException,
             IOException {
@@ -58,6 +82,6 @@ final class MojangService implements BarterService {
             jsonArray = JsonParser.parseReader(jsonReader).getAsJsonArray();
         }
         connection.disconnect();
-        return (NameHistoryServiceResult) serviceResult(jsonArray, ServiceResultType.NAME_HISTORY);
+        return serviceResult(jsonArray, ServiceResultType.NAME_HISTORY);
     }
 }

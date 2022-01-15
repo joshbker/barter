@@ -11,28 +11,67 @@ import java.net.URL;
 import java.util.UUID;
 
 public interface BarterService {
+    /**
+     * Defines a method to obtain the uuid of a player given their name.<br><br>
+     *
+     * @param name the name of a player.
+     * @return {@link ServiceResult} – a wrapper for the json response.
+     * @throws EndpointConnectionException unable to contact endpoint.
+     * @throws IOException                 unable to read input stream.
+     */
     ServiceResult uuidQuery(final @NotNull String name) throws EndpointConnectionException, IOException;
 
+    /**
+     * Defines a method to obtain the profile of a player given their uuid.<br><br>
+     *
+     * @param uid the unique id of a player.
+     * @return {@link ProfileServiceResult} – a wrapper for the profile json response.
+     * @throws EndpointConnectionException unable to contact endpoint.
+     * @throws IOException                 unable to read input stream.
+     */
     ProfileServiceResult profileQuery(final @NotNull UUID uid) throws EndpointConnectionException, IOException;
 
+    /**
+     * Defines a method to obtain the name history of a player given their uuid.<br><br>
+     *
+     * @param uid the unique id of a player.
+     * @return {@link NameHistoryServiceResult} – a wrapper for the name history json response.
+     * @throws EndpointConnectionException unable to contact endpoint.
+     * @throws IOException                 unable to read input stream.
+     */
     NameHistoryServiceResult nameHistoryQuery(final @NotNull UUID uid) throws EndpointConnectionException, IOException;
 
-    default @NotNull ServiceResult serviceResult(final @NotNull JsonElement jsonElement,
-                                                 final @NotNull ServiceResultType resultType) {
+    /**
+     * Defines a method to obtain an implementation of {@link ServiceResult}.<br><br>
+     *
+     * @param jsonElement the unique id of a player.
+     * @param resultType  A {@link ServiceResultType}, the type of wrapper used for the json response.
+     * @return A wrapper for the json response.
+     */
+    default @NotNull <T> T serviceResult(final @NotNull JsonElement jsonElement,
+                                         final @NotNull ServiceResultType resultType) {
         switch (resultType) {
             case PROFILE -> {
-                return new ProfileServiceResult(jsonElement);
+                return (T) new ProfileServiceResult(jsonElement);
             }
             case NAME_HISTORY -> {
-                return new NameHistoryServiceResult(jsonElement);
+                return (T) new NameHistoryServiceResult(jsonElement);
             }
             default -> {
-                return new ServiceResult(jsonElement);
+                return (T) new ServiceResult(jsonElement);
             }
         }
     }
 
-    default @NotNull HttpsURLConnection establishConnection(final @NotNull String endpoint) {
+    /**
+     * Establishes a connection with {@link HttpsURLConnection}.<br><br>
+     *
+     * @param endpoint the url endpoint to connect to.
+     * @return {@link HttpsURLConnection} - a connection to the endpoint.
+     * @throws EndpointConnectionException unable to contact endpoint.
+     */
+    default @NotNull HttpsURLConnection establishConnection(final @NotNull String endpoint)
+            throws EndpointConnectionException {
         try {
             HttpsURLConnection connection = (HttpsURLConnection) new URL(endpoint).openConnection();
             connection.addRequestProperty("Content-Type", "application/json");
