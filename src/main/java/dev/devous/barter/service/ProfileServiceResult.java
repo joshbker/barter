@@ -1,18 +1,22 @@
 package dev.devous.barter.service;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import org.jetbrains.annotations.NotNull;
 
 public final class ProfileServiceResult extends ServiceResult {
-    ProfileServiceResult(@NotNull JsonObject response) {
+    ProfileServiceResult(final @NotNull JsonElement response) {
         super(response);
     }
 
     public @NotNull String name() {
-        return response().get("name").getAsString();
+        return responseObject().get("name").getAsString();
     }
 
     public @NotNull String texture() {
-        return response().get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
+        return responseObject().get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
+    }
+
+    public @NotNull String signature() {
+        return responseObject().get("properties").getAsJsonArray().get(0).getAsJsonObject().get("signature").getAsString();
     }
 }

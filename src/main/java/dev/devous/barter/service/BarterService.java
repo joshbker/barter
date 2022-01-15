@@ -1,27 +1,33 @@
 package dev.devous.barter.service;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import dev.devous.barter.exception.EndpointConnectionException;
 import org.jetbrains.annotations.NotNull;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
 
 public interface BarterService {
     ServiceResult uuidQuery(final @NotNull String name) throws EndpointConnectionException, IOException;
 
-    ServiceResult profileQuery(final @NotNull UUID uid) throws EndpointConnectionException, IOException;
+    ProfileServiceResult profileQuery(final @NotNull UUID uid) throws EndpointConnectionException, IOException;
 
-    default @NotNull ServiceResult serviceResult(final @NotNull JsonObject jsonObject,
+    NameHistoryServiceResult nameHistoryQuery(final @NotNull UUID uid) throws EndpointConnectionException, IOException;
+
+    default @NotNull ServiceResult serviceResult(final @NotNull JsonElement jsonElement,
                                                  final @NotNull ServiceResultType resultType) {
         switch (resultType) {
             case PROFILE -> {
-                return new ProfileServiceResult(jsonObject);
+                return new ProfileServiceResult(jsonElement);
+            }
+            case NAME_HISTORY -> {
+                return new NameHistoryServiceResult(jsonElement);
             }
             default -> {
-                return new ServiceResult(jsonObject);
+                return new ServiceResult(jsonElement);
             }
         }
     }
@@ -37,8 +43,10 @@ public interface BarterService {
             connection.connect();
 
             return connection;
+        } catch (MalformedURLException e) {
+            throw new EndpointConnectionException("Unable to establish connection: Malformed URL.", e);
         } catch (IOException e) {
-            throw new EndpointConnectionException("Unable to establish connection.", e);
+            throw new EndpointConnectionException("Unable to establish connection:", e);
         }
     }
 }
