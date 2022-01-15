@@ -1,2 +1,2 @@
 # `Barter`
-Java wrapper library for some parts Mojang's API
+Java wrapper library for some parts Mojang's API.
