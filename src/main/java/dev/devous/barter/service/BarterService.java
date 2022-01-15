@@ -7,16 +7,26 @@ import org.jetbrains.annotations.NotNull;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
+import java.util.UUID;
 
 public interface BarterService {
-    ServiceResult uuidQuery(final @NotNull String username) throws EndpointConnectionException, IOException;
+    ServiceResult uuidQuery(final @NotNull String name) throws EndpointConnectionException, IOException;
 
-    default ServiceResult serviceResult(final @NotNull JsonObject jsonObject) {
-        return new ServiceResult(jsonObject);
+    ServiceResult profileQuery(final @NotNull UUID uid) throws EndpointConnectionException, IOException;
+
+    default @NotNull ServiceResult serviceResult(final @NotNull JsonObject jsonObject,
+                                                 final @NotNull ServiceResultType resultType) {
+        switch (resultType) {
+            case PROFILE -> {
+                return new ProfileServiceResult(jsonObject);
+            }
+            default -> {
+                return new ServiceResult(jsonObject);
+            }
+        }
     }
 
-    default Optional<HttpsURLConnection> establishConnection(final @NotNull String endpoint) {
+    default @NotNull HttpsURLConnection establishConnection(final @NotNull String endpoint) {
         try {
             HttpsURLConnection connection = (HttpsURLConnection) new URL(endpoint).openConnection();
             connection.addRequestProperty("Content-Type", "application/json");
@@ -26,11 +36,9 @@ public interface BarterService {
 
             connection.connect();
 
-            return Optional.of(connection);
+            return connection;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new EndpointConnectionException("Unable to establish connection.", e);
         }
-
-        return Optional.empty();
     }
 }
